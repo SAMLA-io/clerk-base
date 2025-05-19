@@ -1,7 +1,36 @@
-import { currentUser } from "@clerk/nextjs/server";
+"use client";
 
-export default async function Home() {
-  const user = await currentUser();
+import { useAuth, useUser } from "@clerk/nextjs";
+import { useState, useEffect } from "react";
+
+export default function Home() {
+  const { isSignedIn, user, isLoaded } = useUser();
+  const { userId, sessionId, getToken } = useAuth();
+  const [token, setToken] = useState<string>("");
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getToken();
+        setToken(token || "");
+      } catch (error) {
+        console.error("Error fetching token:", error);
+        setToken("");
+      }
+    };
+
+    if (isSignedIn) {
+      fetchToken();
+    }
+  }, [getToken, isSignedIn]);
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isSignedIn) {
+    return <div>Not signed in</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -11,7 +40,7 @@ export default async function Home() {
             SAMLA Clerk Auth Testing
           </h1>
           <p className="text-lg text-gray-600">
-            A test application for Clerk SAML authentication
+            A test application for Clerk SAMLA authentication
           </p>
         </div>
 
@@ -21,34 +50,30 @@ export default async function Home() {
               {user.imageUrl && (
                 <img
                   src={user.imageUrl}
-                  alt={user.firstName || "User"}
+                  alt={user.firstName|| "User"}
                   className="w-16 h-16 rounded-full"
                 />
               )}
               <div>
                 <h2 className="text-2xl font-semibold text-gray-900">
-                  {user.firstName || "User"}
+                  {user.firstName + " " + user.lastName || "User"}
                 </h2>
                 <p className="text-gray-600">{user.emailAddresses[0].emailAddress}</p>
               </div>
             </div>
 
+            {/* Session Information */}
+            <div className="border-t border-gray-200 my-6"></div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Session Information</h3>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-500 mb-1">User ID</p>
-                <p className="font-mono text-gray-900">{user.id}</p>
+                <p className="text-gray-500 mb-1">Session ID</p>
+                <p className="font-mono text-gray-900">{userId}</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-500 mb-1">Created</p>
-                <p className="text-gray-900">
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-500 mb-1">Last Updated</p>
-                <p className="text-gray-900">
-                  {new Date(user.updatedAt).toLocaleDateString()}
-                </p>
+                <p className="text-gray-500 mb-1">Session Token</p>
+                <p className="font-mono text-gray-900 break-all">{token}</p>
               </div>
             </div>
           </div>
