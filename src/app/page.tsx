@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const token = await getToken();
+        const token = await getToken({ template: process.env.CLERK_API_GATEWAY_JWT_TEMPLATE || "" });
         setToken(token || "");
       } catch (error) {
         console.error("Error fetching token:", error);
