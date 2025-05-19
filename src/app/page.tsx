@@ -7,6 +7,7 @@ export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
   const { userId, sessionId, getToken } = useAuth();
   const [token, setToken] = useState<string>("");
+  const [claims, setClaims] = useState<any>(null);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -23,6 +24,27 @@ export default function Home() {
       fetchToken();
     }
   }, [getToken, isSignedIn]);
+
+  const verifyUserToken = async () => {
+    try {
+      const response = await fetch('/api/verify-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setClaims(data.claims);
+      } else {
+        console.error('Verification failed:', data.error);
+      }
+    } catch (error) {
+      console.error('Error verifying token:', error);
+    }
+  };
 
   if (!isLoaded) {
     return <div>Loading...</div>;
@@ -50,7 +72,7 @@ export default function Home() {
               {user.imageUrl && (
                 <img
                   src={user.imageUrl}
-                  alt={user.firstName|| "User"}
+                  alt={user.firstName || "User"}
                   className="w-16 h-16 rounded-full"
                 />
               )}
@@ -76,6 +98,26 @@ export default function Home() {
                 <p className="font-mono text-gray-900 break-all">{token}</p>
               </div>
             </div>
+
+            {/* Token Verification */}
+            <div className="border-t border-gray-200 my-6"></div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Token Verification</h3>
+
+            <button
+              onClick={verifyUserToken}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+            >
+              Verify Token
+            </button>
+
+            {claims && (
+              <div className="mt-4 bg-gray-50 p-4 rounded-lg text-gray-900">
+                <p className="mb-2">Token Claims:</p>
+                <pre className="text-sm overflow-auto">
+                  {JSON.stringify(claims, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center text-gray-600">
