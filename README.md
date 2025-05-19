@@ -52,3 +52,7 @@ The application will be available at `http://localhost:3000`.
 ## Development
 
 - `pnpm dev` - Start development server
+
+## Contributors
+
+- [@jpgtzg](https://github.com/jpgtzg)
