@@ -47,11 +47,11 @@ export default function Home() {
   };
 
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-center flex items-center justify-center text-gray-600 font-bold text-2xl">Loading...</div>;
   }
 
   if (!isSignedIn) {
-    return <div>Not signed in</div>;
+    return <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-center flex items-center justify-center text-gray-600 font-bold text-2xl">Not signed in</div>;
   }
 
   return (
@@ -81,6 +81,15 @@ export default function Home() {
                   {user.firstName + " " + user.lastName || "User"}
                 </h2>
                 <p className="text-gray-600">{user.emailAddresses[0].emailAddress}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-gray-600 break-all flex-1">{user.id}</p>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(user.id || "")}
+                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors shrink-0"
+                  >
+                    Copy
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -90,11 +99,27 @@ export default function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-500 mb-1">Session ID</p>
-                <p className="font-mono text-gray-900">{userId}</p>
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-gray-500 ">Session ID</p>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(sessionId || "")}
+                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <p className="font-mono text-gray-900 break-all">{userId}</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-500 mb-1">Session Token</p>
+                <div className="flex justify-between items-center mb-2">
+                    <p className="text-gray-500 ">Session Token</p>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(token || "")}
+                      className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors"
+                    >
+                      Copy
+                    </button>
+                  </div>
                 <p className="font-mono text-gray-900 break-all">{token}</p>
               </div>
             </div>
